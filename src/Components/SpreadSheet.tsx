@@ -11,6 +11,8 @@ import ServerSelector from "./ServerSelector";
 
 interface SpreadSheetProps {
   documentName: string;
+  userName: string;
+  resetURL: (documentName: string) => void;
 }
 
 /**
@@ -22,14 +24,13 @@ interface SpreadSheetProps {
 // create the client that talks to the backend.
 const spreadSheetClient = new SpreadSheetClient('test', 'juancho');
 
-function SpreadSheet({ documentName }: SpreadSheetProps) {
+function SpreadSheet({ userName, documentName ,resetURL }: SpreadSheetProps) {
   const [formulaString, setFormulaString] = useState(spreadSheetClient.getFormulaString())
   const [resultString, setResultString] = useState(spreadSheetClient.getResultString())
   const [cells, setCells] = useState(spreadSheetClient.getSheetDisplayStringsForGUI());
   const [statusString, setStatusString] = useState(spreadSheetClient.getEditStatusString());
   const [currentCell, setCurrentCell] = useState(spreadSheetClient.getWorkingCellLabel());
   const [currentlyEditing, setCurrentlyEditing] = useState(spreadSheetClient.getEditStatus());
-  const [userName, setUserName] = useState(window.sessionStorage.getItem('userName') || "");
   const [cellsBeingEdited, setCellsBeingEdited] = useState(spreadSheetClient.getCellsBeingEdited());
   const [serverSelected, setServerSelected] = useState("localhost");
 
@@ -54,33 +55,6 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
     return () => clearInterval(interval);
   });
 
-
-  function getUserLogin() {
-    return <div>
-      <input
-        type="text"
-        placeholder="User name"
-        defaultValue={userName}
-        onChange={(event) => {
-          // get the text from the input
-          let userName = event.target.value;
-          window.sessionStorage.setItem('userName', userName);
-          // set the user name
-          setUserName(userName);
-          spreadSheetClient.userName = userName;
-        }} />
-    </div>
-
-  }
-
-  function checkUserName(): boolean {
-    if (userName === "") {
-      alert("Please enter a user name");
-      return false;
-    }
-    return true;
-  }
-
   /**
    * 
    * @param event 
@@ -94,10 +68,6 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
    * the other buttons do require asynchronous processing and so the function is marked async
    */
   async function onCommandButtonClick(text: string): Promise<void> {
-
-    if (!checkUserName()) {
-      return;
-    }
 
     switch (text) {
 
@@ -137,9 +107,7 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
    * 
    * */
   function onButtonClick(event: React.MouseEvent<HTMLButtonElement>): void {
-    if (!checkUserName()) {
-      return;
-    }
+  
     const text = event.currentTarget.textContent;
     let trueText = text ? text : "";
     spreadSheetClient.setEditStatus(true);
@@ -166,10 +134,6 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
    */
   function onCellClick(event: React.MouseEvent<HTMLButtonElement>): void {
 
-    if (userName === "") {
-      alert("Please enter a user name");
-      return;
-    }
     const cellLabel = event.currentTarget.getAttribute("cell-label");
     // calculate the current row and column of the clicked on cell
 
@@ -195,6 +159,7 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
     <div>
       <Formula formulaString={formulaString} resultString={resultString}  ></Formula>
       <Status statusString={statusString}></Status>
+      {userName? <h3> You are currently logged in as {userName}</h3> : <h3> You are currently not logined, document cannot be edited and saved.</h3>}
       {<SheetHolder cellsValues={cells}
         onClick={onCellClick}
         currentCell={currentCell}
@@ -203,7 +168,8 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
       <KeyPad onButtonClick={onButtonClick}
         onCommandButtonClick={onCommandButtonClick}
         currentlyEditing={currentlyEditing}></KeyPad>
-      {getUserLogin()}
+      <button onClick={() => resetURL('files')
+        }>Return to File Browser</button>
       <ServerSelector serverSelector={serverSelector} serverSelected={serverSelected} />
     </div>
   )

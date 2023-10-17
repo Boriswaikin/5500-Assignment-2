@@ -28,6 +28,7 @@
   color: #61dafb;
 }
 
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -35,4 +36,20 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.login{
+  width: 500px;
+  justify-content: center;
+}
+
+.loginTable{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginName{
+  margin-top: -10%;
 }
