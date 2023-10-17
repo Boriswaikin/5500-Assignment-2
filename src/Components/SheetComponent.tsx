@@ -14,13 +14,12 @@ interface SheetComponentProps {
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   currentCell: string;
   currentlyEditing: boolean;
-  cellsBeingEdited:{ [key: string]: string }
 } // interface SheetComponentProps
 
 
 
 
-function SheetComponent({ cellsValues, onClick, currentCell, currentlyEditing, cellsBeingEdited }: SheetComponentProps) {
+function SheetComponent({ cellsValues, onClick, currentCell, currentlyEditing }: SheetComponentProps) {
 
   /**
    * 
@@ -39,9 +38,6 @@ function SheetComponent({ cellsValues, onClick, currentCell, currentlyEditing, c
     if (cell === currentCell && currentlyEditing) {
       return "cell-editing";
     }
-    if (cell in cellsBeingEdited && cell !== currentCell) {
-      return "cell-locked";
-    }
     if (cell === currentCell) {
       return "cell-selected";
     }
@@ -51,6 +47,7 @@ function SheetComponent({ cellsValues, onClick, currentCell, currentlyEditing, c
   return (
     <table className="table">
       <tbody>
+        {/*add a row with column cellsValues */}
         <tr>
           <th></th>
           {cellsValues[0].map((col, colIndex) => (
@@ -63,7 +60,7 @@ function SheetComponent({ cellsValues, onClick, currentCell, currentlyEditing, c
           <tr key={rowIndex}>
             <td> {Cell.rowNumberToName(rowIndex)}</td>
             {row.map((cell, colIndex) => (
-              <td key={colIndex} style={{position:"relative"}}>
+              <td key={colIndex}>
                 <button
                   onClick={onClick}
                   value={cell}
@@ -73,7 +70,7 @@ function SheetComponent({ cellsValues, onClick, currentCell, currentlyEditing, c
                 >
                   {cell}
                 </button>
-                {cellsBeingEdited[Cell.columnRowToCell(colIndex, rowIndex)] && <span className="user-label">{cellsBeingEdited[Cell.columnRowToCell(colIndex, rowIndex)]}</span>}
+
               </td>
             ))}
           </tr>

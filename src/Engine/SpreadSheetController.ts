@@ -4,7 +4,6 @@ import CalculationManager from "./CalculationManager"
 import FormulaBuilder from "./FormulaBuilder";
 import Cell from "./Cell";
 import { ContributingUser } from "./ContributingUser";
-import { connected } from "process";
 
 /**
  *  The main controller of the SpreadSheet
@@ -83,14 +82,10 @@ export class SpreadSheetController {
     // check to see if the user is editing another cell.
     if (this._contributingUsers.has(user)) {
       const userData = this._contributingUsers.get(user);
-      console.log("viewaccess1", this._cellsBeingEdited);
       if (userData!.cellLabel !== '' && userData!.cellLabel !== cellLabel) {
-        if (!(this._cellsBeingEdited.has(userData!.cellLabel))) {
-          this._cellsBeingEdited.delete(userData!.cellLabel);
-        }
+        this._cellsBeingEdited.delete(userData!.cellLabel);
       }
-        this.releaseEditAccess(user);
-      
+      this.releaseEditAccess(user);
     }
 
     // if it does not exist them make and give view access
@@ -98,7 +93,6 @@ export class SpreadSheetController {
       let userData = new ContributingUser(cellLabel)
       userData.isEditing = false;
       this._contributingUsers.set(user, userData);
-      console.log("viewaccess2", this._cellsBeingEdited);
       userData.formulaBuilder.setFormula(this._memory.getCellByLabel(cellLabel).getFormula());
       return;
     }
@@ -131,6 +125,7 @@ export class SpreadSheetController {
     this._cellsBeingEdited.set(cellLabel, user);
     const userEditing = this._contributingUsers.get(user);
 
+
     userEditing!.isEditing = true;
 
     return true;
@@ -142,8 +137,7 @@ export class SpreadSheetController {
     // if the user is editing a cell then free that one up
     const editingCell: string | undefined = this._contributingUsers.get(user)?.cellLabel;
     if (editingCell) {
-      if (this._cellsBeingEdited.has(editingCell) && (this._cellsBeingEdited.get(editingCell) === user)) {
-        console.log("viewaccess4", this._cellsBeingEdited);
+      if (this._cellsBeingEdited.has(editingCell)) {
         this._cellsBeingEdited.delete(editingCell);
       }
     }
@@ -340,8 +334,6 @@ export class SpreadSheetController {
     container.formula = this.getFormulaStringForUser(user);
     container.result = this.getResultStringForUser(user);
     container.isEditing = userData.isEditing;
-    container.cellsBeingEdited = Object.fromEntries(this._cellsBeingEdited);
-
     return container;
   }
 
