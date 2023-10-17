@@ -16,12 +16,29 @@ interface CellProps {
   className: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   style: React.CSSProperties;
+  editor?: string
 } // interface CellProps
 
-function Cell({ value, label, className, onClick, style }: CellProps) {
+function Cell({ value, label, className, onClick, style, editor }: CellProps) {
   return (
     <button className={className} onClick={onClick} style={style} value={value}>
       {label}
+      {editor && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+            padding: '3px',
+            borderRadius: '3px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+          }}
+        >
+          {editor}
+        </div>
+      )}
     </button>
   );
 } // Cell

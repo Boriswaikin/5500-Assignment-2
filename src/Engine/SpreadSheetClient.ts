@@ -52,7 +52,9 @@ class SpreadSheetClient {
             currentCell: 'A1',
             isEditing: false,
             cells: new Map<string, CellTransport>(),
+            cellsBeingEdited: {},
         };
+        console.log(document);
         for (let row = 0; row < document.rows; row++) {
             for (let column = 0; column < document.columns; column++) {
                 const cellName = Cell.columnRowToCell(column, row);
@@ -112,6 +114,7 @@ class SpreadSheetClient {
     public set documentName(documentName: string) {
         this._documentName = documentName;
     }
+
 
     public getFormulaString(): string {
         if (!this._document) {
@@ -189,6 +192,13 @@ class SpreadSheetClient {
         return this._document.currentCell;
     }
 
+    public getCellsBeingEdited() : { [key: string]: string } {
+        if (!this._document) {
+            return {};
+        }
+        return this._document.cellsBeingEdited;
+    }
+
     public getEditStatus(): boolean {
         return this._document.isEditing;
     }
@@ -220,6 +230,7 @@ class SpreadSheetClient {
             .then(response => {
                 return response.json() as Promise<DocumentTransport>;
             }).then((document: DocumentTransport) => {
+                console.log(document);
                 this._updateDocument(document);
             });
     }
@@ -366,6 +377,7 @@ class SpreadSheetClient {
         const columns = document.columns;
         const rows = document.rows;
         const isEditing = document.isEditing;
+        const cellsBeingEdited = document.cellsBeingEdited
 
 
 
@@ -379,6 +391,7 @@ class SpreadSheetClient {
             rows: rows,
             isEditing: isEditing,
             cells: new Map<string, CellTransport>(),
+            cellsBeingEdited: cellsBeingEdited
         };
         // create the cells
         const cells = document.cells as unknown as CellTransportMap;

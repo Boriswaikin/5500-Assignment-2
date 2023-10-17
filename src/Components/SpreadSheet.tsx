@@ -30,6 +30,7 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
   const [currentCell, setCurrentCell] = useState(spreadSheetClient.getWorkingCellLabel());
   const [currentlyEditing, setCurrentlyEditing] = useState(spreadSheetClient.getEditStatus());
   const [userName, setUserName] = useState(window.sessionStorage.getItem('userName') || "");
+  const [cellsBeingEdited, setCellsBeingEdited] = useState(spreadSheetClient.getCellsBeingEdited());
   const [serverSelected, setServerSelected] = useState("localhost");
 
 
@@ -42,6 +43,7 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
     setCells(spreadSheetClient.getSheetDisplayStringsForGUI());
     setCurrentCell(spreadSheetClient.getWorkingCellLabel());
     setCurrentlyEditing(spreadSheetClient.getEditStatus());
+    setCellsBeingEdited(spreadSheetClient.getCellsBeingEdited());
   }
 
   // useEffect to refetch the data every 1/20 of a second
@@ -104,9 +106,13 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
         if (currentlyEditing) {
           spreadSheetClient.setEditStatus(false);
         } else {
+          if (currentCell in cellsBeingEdited) {
+            alert("This cell is being edited by others!");
+          }
           spreadSheetClient.setEditStatus(true);
         }
         setStatusString(spreadSheetClient.getEditStatusString());
+        console.log(statusString);
         break;
 
       case ButtonNames.clear:
@@ -192,7 +198,8 @@ function SpreadSheet({ documentName }: SpreadSheetProps) {
       {<SheetHolder cellsValues={cells}
         onClick={onCellClick}
         currentCell={currentCell}
-        currentlyEditing={currentlyEditing} ></SheetHolder>}
+        currentlyEditing={currentlyEditing} 
+        cellsBeingEdited={cellsBeingEdited}></SheetHolder>}
       <KeyPad onButtonClick={onButtonClick}
         onCommandButtonClick={onCommandButtonClick}
         currentlyEditing={currentlyEditing}></KeyPad>
