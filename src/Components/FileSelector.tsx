@@ -12,12 +12,12 @@ const hostname = window.location.hostname;
 const baseURL = `http://${hostname}:${port}`;
 
 // include a function to call with a document name to modify the URL
-interface FileBrowserProps {
+interface FileSelectorProps {
     userName: string;
     resetURL: (documentName: string) => void;
 }
 
-export function FileBrowser({ userName,resetURL }: FileBrowserProps) {
+export function FileSelector({ userName,resetURL }: FileSelectorProps) {
 
     const [files, setFiles] = useState<string[]>([]);
     const [newFileName, setNewFileName] = useState<string>('');
@@ -125,4 +125,4 @@ export function FileBrowser({ userName,resetURL }: FileBrowserProps) {
     </div>
 }
 
-export default FileBrowser;
+export default FileSelector;
