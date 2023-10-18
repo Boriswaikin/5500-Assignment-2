@@ -73,14 +73,14 @@ export class FormulaEvaluator {
     return result;
   }
 
-  //use this function to excutate * and / operators
+  //for operators like sin and x^2, the input form is like 2sin, which means sin(2)
   private multiply(): number {
     if (this._errorOccured) {
       return this._lastResult;
     }
     let result = this.getNumber();
-    let level = this.operatorLevel();
-    while ( this._currentFormula.length > 0 && level > 1) {
+    while ( this._currentFormula.length > 0 && this.operatorLevel() > 1) {
+      let level = this.operatorLevel();
       let operator = this._currentFormula.shift();
       if (this._errorOccured && level === 3) {
         this._errorOccured = false;
